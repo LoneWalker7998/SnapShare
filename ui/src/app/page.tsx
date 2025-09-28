@@ -7,6 +7,10 @@ import InviteCode from '@/components/InviteCode';
 import axios from 'axios';
 import { FiUpload, FiDownload } from 'react-icons/fi';
 
+// 👇 New: backend base URL, using Vercel env var
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+
 export default function Home() {
   const [tab, setTab] = useState<'upload' | 'download'>('upload');
 
@@ -48,7 +52,8 @@ export default function Home() {
         }),
       );
 
-      const response = await axios.post('/api/upload', formData, {
+      // 👇 changed to use API_BASE
+      const response = await axios.post(`${API_BASE}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (ev) => {
           if (!ev.total) return;
@@ -63,7 +68,6 @@ export default function Home() {
       setServedName(data.servedName || data.zipName || null);
       setIsZip(!!data.isZip);
 
-      // ✅ Do not clear files here, let user remove them manually
       setTab('upload');
     } catch (err: any) {
       console.error('Upload error:', err);
@@ -85,7 +89,8 @@ export default function Home() {
     setIsDownloading(true);
     setDownloadError(null);
     try {
-      const response = await axios.get(`/api/download/${portToUse}`, {
+      // 👇 changed to use API_BASE
+      const response = await axios.get(`${API_BASE}/download/${portToUse}`, {
         responseType: 'blob',
       });
 
